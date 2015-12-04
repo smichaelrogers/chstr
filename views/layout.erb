@@ -4,13 +4,14 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Chstr Chess Engine</title>
+    <title>Chstr, an Open Source Chess Engine</title>
     <meta name="description" content="Play Chess against Chstr, a clever Chess Engine written in Ruby!">
     <meta name="author" content="Scott Michael Rogers">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="stylesheet" href="assets/application.css" media="screen" charset="utf-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <script src="assets/application.js"></script>
   </head>
 
@@ -19,18 +20,15 @@
       <div class="container">
         <nav class="navbar">
           <ul class="navbar-list">
-            <li class="navbar-item"><a class="navbar-link" href="#">Chstr</a></li>
-            <li class="navbar-item"><a class="navbar-link" href="#about">About</a></li>
+            <li class="navbar-item-logo"><a class="navbar-logo" href="#">Chstr</a></li>
+            <li class="navbar-item-link"><a class="navbar-link" href="#about">About</a></li>
+            <li class="navbar-item-link"><a class="navbar-link" href="#about"><i class="fa fa-lg fa-fw fa-github"></i></a></li>
           </ul>
         </nav>
+        <%= yield %>
       </div>
     </div>
-    <div class="section">
-      <%= yield %>
-    </div>
-    <div class="section" id="#about">
-      asdf abo
-    </div>
+    <input id="fen" type="hidden" value="">
   </body>
 
 </html>

@@ -1,21 +1,20 @@
-<div class="container">
-  <div class="row">
-    <div id="left">
-      <button type="button" id="new-game">new game</button>
-      <table id="board">
-
-      </table>
-    </div>
-    <div id="right">
-      <div id="report"></div>
-    </div>
+<div class="row">
+  <div class="left">
+    <table id="board"></table>
+    <h5>node distribution</h5>
+    <table id="npp"></table>
   </div>
-  <div class="row" id="gfx">
-
-  </div>
-  <div class="row">
-    <div class="six columns">
-      <div id="fen"></div>
-    </div>
+  <div class="right">
+    <h5>principal variation</h5>
+    <table id="pv"></table>
+    <h5>statistics</h5>
+    <div id="report"></div>
+    <h5>engine</h5>
+    <select class="u-full-width" id="strength">
+      <option value="16">Normal (16 seconds)</option>
+      <option value="2">Weak (2 seconds)</option>
+      <option value="60">Full (60 seconds)</option>
+    </select>
+    <button class="button-primary" id="new-game" type="button">new game</button>
   </div>
 </div>

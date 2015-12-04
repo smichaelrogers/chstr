@@ -5,8 +5,9 @@ class Chstr
   # while deepening to ideally search less unnecessary nodes.  Generates tables for the
   # different heuristics involved in move ordering and move generation.  Stores report data for
   # relay to the browser.
-  def init_search(duration = 2)
+  def init_search(duration = 4)
     @duration = duration
+    @clock = 0.0
     init_tables
     start_time = Time.now
 
@@ -81,6 +82,8 @@ class Chstr
       # break if out of time or a book move is found
       break if start_time + @duration < Time.now || @best_score > INF
     end
+
+    @clock = (Time.now - start_time).round(2)
 
     # no move available means checkmate
     return unless @best_move
@@ -218,6 +221,7 @@ class Chstr
     @best_move = nil
     @best_score = -INF
     @duration = 4
+    @clock = 0
     @pv = Array.new(MAXPLY){ [] }
   end
 

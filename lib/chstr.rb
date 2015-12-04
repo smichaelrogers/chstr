@@ -116,20 +116,22 @@ class Chstr
 
   # Generates a bunch of lovely stuff for the browser
   def gamestate
-    npp_percentages = []
-    npp_max = 0
-    npp_max_ply = 0
-    time_elapsed = (Time.now - @duration.to_f).to_f.round(1)
+    npp_max, npp_max_ply = 0, 0
+    pv_length, pv_total = 0, 0
+    npp_chart_data, pv_chart_data = Array.new(16) { 0 }, {}
+    rgb = Hash.new{ |h, k| h[k] = [0, 0, 0] }
+    valid_moves = valid_root_moves
+    checkmate = valid_moves.length > 0 ? false : true
+    pieces = []
+
     @npp[1, 16].each_with_index do |i, idx|
+      npp_chart_data[idx] = i
       if i > npp_max
         npp_max = i
         npp_max_ply = idx
       end
-      npp_percentages << ((i.to_f / @nodes.to_f) * 100.0).round(1)
     end
-    valid_moves = valid_root_moves
-    checkmate = valid_moves.length > 0 ? false : true
-    pieces = []
+
     SQ.each do |sq|
       if @colors[sq] != EMPTY
         piece, color = @squares[sq], @colors[sq]
@@ -142,12 +144,28 @@ class Chstr
       end
     end
 
-    pv_length = 0
     @pv.each_with_index do |m, depth|
+      pv_total += m.length
       if m.empty?
         pv_length = depth
         break
       end
+    end
+
+    pv_length.times do |i|
+      @pv[i].each do |j|
+        if i < pv_length * 0.34
+          rgb[j][0] += (pv_length / pv_total)  * (i + 1)
+        elsif i < pv_length * 0.67
+          rgb[j][1] += (pv_length / pv_total)  * (i + 1)
+        else
+          rgb[j][2] += (pv_length / pv_total)  * (i + 1)
+        end
+      end
+    end
+
+    rgb.each do |k, v|
+      pv_chart_data[k] = "##{v[0].to_s(16)}#{v[1].to_s(16)}#{v[2].to_(16)}"
     end
 
     if checkmate
@@ -168,14 +186,13 @@ class Chstr
 
     {
       fen: to_fen,
+      status: status,
       pieces: pieces,
       from: SQ_ID[@best_move[0]],
       to: SQ_ID[@best_move[1]],
-      pv: @pv[0, 16],
-      npp: {
-        count: @npp,
-        percentages: npp_percentages
-      },
+      pv: pv_chart_data,
+      npp: npp_chart_data,
+      nodes: @nodes,
       report: {
         'move' => move,
         'move type' => move_type,
@@ -184,8 +201,8 @@ class Chstr
         'principal variation length' => pv_length,
         'evaluation after move' => evaluation,
         'evaluations' => @nodes,
-        'evaluations per second' => (@nodes.to_f / time_elapsed).round(1),
-        'time elapsed' => time_elapsed,
+        'evaluations per second' => (@nodes.to_f / @clock).round(2),
+        'time elapsed' => @clock,
         'time allotted' => @duration,
         'max depth' => @max_depth,
         'median depth' => npp_max_ply,
