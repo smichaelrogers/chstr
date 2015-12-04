@@ -107,7 +107,7 @@ class Chstr
     # append irreversibles to the fen array
     FEN_CASTLE.each { |letter, square| str += letter if @castling.include?(square) }
     fen << str == "" ? "-" : str
-    fen << @ep ? SQ_ID[@ep] : "-"
+    fen << @ep.nil? ? "-" : SQ_ID[@ep]
     fen << @fifty.to_s
     fen << @full_moves.to_s
 
@@ -115,12 +115,11 @@ class Chstr
   end
 
   # Generates a bunch of lovely stuff for the browser
-  def generate_json
+  def gamestate
     npp_percentages = []
     npp_max = 0
     npp_max_ply = 0
-    time_elapsed = (Time.now - @duration.to_f).round(1)
-    moves = []
+    time_elapsed = (Time.now - @duration.to_f).to_f.round(1)
     @npp[1, 16].each_with_index do |i, idx|
       if i > npp_max
         npp_max = i
@@ -129,42 +128,61 @@ class Chstr
       npp_percentages << ((i.to_f / @nodes.to_f) * 100.0).round(1)
     end
     valid_moves = valid_root_moves
+    checkmate = valid_moves.length > 0 ? false : true
+    pieces = []
     SQ.each do |sq|
       if @colors[sq] != EMPTY
         piece, color = @squares[sq], @colors[sq]
-
-        if color == @wtm
-          current_moves = valid_moves.select { |m| m[0] == sq }.map { |m| SQ_ID[m[1]] }
+        if color == @wtm && !checkmate
+          moves = valid_moves.select { |m| m[0] == sq }.map { |m| SQ_ID[m[1]] }
         else
-          current_moves = []
+          moves = []
         end
-        moves << { square: SQ_ID[sq], moves: current_moves }
+        pieces << { piece: UTF8[color][piece], square: SQ_ID[sq], moves: moves }
       end
     end
+
     pv_length = 0
     @pv.each_with_index do |m, depth|
       if m.empty?
         pv_length = depth
+        break
+      end
+    end
+
+    if checkmate
+      status = 'You lost'
+    else
+      if @best_move
+        status = 'OK'
+        move = "#{UTF8[WHITE][@best_move[2]]} #{SQ_ID[@best_move[0]]} #{SQ_ID[@best_move[1]]}"
+        move_type = TYPES[@best_move[4]]
+        evaluation = evaluate
+      else
+        status = 'You win'
+        move = "none"
+        move_type = ""
+        evaluation = 99999
       end
     end
 
     {
       fen: to_fen,
-      moves: moves,
+      pieces: pieces,
       from: SQ_ID[@best_move[0]],
       to: SQ_ID[@best_move[1]],
+      pv: @pv[0, 16],
       npp: {
         count: @npp,
-        percentages: npp_percentages,
-        pv: @pv[0, 16]
+        percentages: npp_percentages
       },
       report: {
-        'move' => "#{UTF8[WHITE][@best_move[2]]} #{SQ_ID[@best_move[0]]} #{SQ_ID[@best_move[1]]}",
-        'move type' => TYPES[@best_move[4]],
+        'move' => move,
+        'move type' => move_type,
         'move score' => @best_score,
         'move changes' => @pv[0].count,
         'principal variation length' => pv_length,
-        'evaluation after move' => evaluate,
+        'evaluation after move' => evaluation,
         'evaluations' => @nodes,
         'evaluations per second' => (@nodes.to_f / time_elapsed).round(1),
         'time elapsed' => time_elapsed,
@@ -174,7 +192,7 @@ class Chstr
         'horizon depth' => @hrzn,
         'nodes at median' => npp_max
       }
-    }.to_json
+    }
   end
 
 end

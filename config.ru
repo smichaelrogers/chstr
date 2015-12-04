@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'bundler'
-%w(sprockets sass uglifier sinatra sinatra/reloader ./lib/chstr).each do |dep|
+%w(sprockets sass uglifier sinatra sinatra/reloader better_errors binding_of_caller ./lib/chstr).each do |dep|
   require dep
 end
 %w(definitions move move_generation search evaluation).each do |dep|
@@ -9,10 +9,9 @@ end
 
 require './app'
 
-set :server, :puma
 set :root, File.dirname(__FILE__)
 set :logging, true
-
+BetterErrors::Middleware.allow_ip! ENV['TRUSTED_IP'] if ENV['TRUSTED_IP']
 map '/assets' do
   environment = Sprockets::Environment.new
   environment.append_path 'assets/javascripts'

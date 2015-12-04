@@ -1,3 +1,3 @@
 //= require lib/chartist
-//= require chess
 //= require app
+//= require init

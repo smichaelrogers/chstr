@@ -28,14 +28,14 @@ class Chstr
         end
 
         if i == 0 && !initial
-          @pv[@ply] << SQ_ID[SQ120[1][to]]
+          @pv[@ply] << SQ_ID[to]
           # search full depth for the principal variation (current best path from the root)
           score = -search(-beta, -alpha, @hrzn, true)
         else
           # null window search
           score = -search(-alpha - 1, -alpha, @hrzn, false)
           if score > @best_score
-            @pv[@ply] << SQ_ID[SQ120[1][to]]
+            @pv[@ply] << SQ_ID[to]
             # found a new principal variation, search it fully
             score = -search(-beta, -alpha, @hrzn, true)
           end
@@ -43,7 +43,7 @@ class Chstr
 
         if initial && @full_moves < 10
           # check for a book position on first round, randomize for less repetitive behavior
-          fen = self.to_fen.split.first.gsub("/", '')
+          fen = to_fen.split.first.gsub("/", '')
           if @@book.include?(fen)
             score += INF + rand(32)
           end
@@ -83,9 +83,7 @@ class Chstr
     end
 
     # no move available means checkmate
-    if @best_move == nil
-      return false
-    end
+    return unless @best_move
 
     # adjust irreversibles
     from, to, piece, target, type, score = @best_move
@@ -102,10 +100,6 @@ class Chstr
 
     @fifty = type > 1 ? 0 : @fifty + 1
     root_make(from, to, piece, target, type)
-    @evaluation = evaluate
-    @clock = Time.now - start_time
-
-    true
   end
 
   # Performs a Principal Variation (NegaScout) search, a directional minimax recursive algorithm
@@ -124,7 +118,7 @@ class Chstr
       i += 1
 
       if pv_node && i == 1
-        @pv[@ply] << SQ_ID[SQ120[1][to]]
+        @pv[@ply] << SQ_ID[to]
         # on principal variation, search full window
         score = -search(-beta, -alpha, depth - 1, true)
       else
@@ -132,7 +126,7 @@ class Chstr
         score = -search(-(alpha + 1), -alpha, depth - (1 + (i / 4)), false)
         if score > alpha && score < beta
           if pv_node
-            @pv[@ply] << SQ_ID[SQ120[1][to]]
+            @pv[@ply] << SQ_ID[to]
             # still on principal variation just not the move we expected
             score = -search(-beta, -alpha, depth - 1, true)
           else
@@ -147,11 +141,10 @@ class Chstr
 
       if score > alpha
         @ht[piece][to] += @hrzn
-
         return beta if score >= beta
+
         alpha = score
         @kt[@ply][piece][to] += 2**@hrzn
-
         if pv_node
           @kt[@ply][piece][to] += @hrzn**@hrzn
         end
