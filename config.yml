@@ -1,0 +1,20 @@
+defaults: &defaults
+  username: chstr
+  password:
+  port: 27017
+  session_secret: 5b49d8cb1871123b98d23b08c40c92d0
+
+development:
+  host: localhost
+  <<: *defaults
+
+test:
+  host: localhost
+  <<: *defaults
+
+production:
+  uri:
+  host: localhost
+  username: production_username
+  password:
+  <<: *defaults
