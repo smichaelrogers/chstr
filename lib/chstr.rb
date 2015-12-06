@@ -1,4 +1,3 @@
-require 'json'
 # All of Chstr resides in one class spread across several files.
 # Although this is clearly not in line with most Ruby styleguides it seems to be the most efficient
 # approach to avoiding many of the pitfalls in Ruby performance.
@@ -116,21 +115,9 @@ class Chstr
 
   # Generates a bunch of lovely stuff for the browser
   def gamestate
-    npp_max, npp_max_ply = 0, 0
-    pv_length, pv_total = 0, 0
-    npp_chart_data, pv_chart_data = Array.new(16) { 0 }, {}
-    rgb = Hash.new{ |h, k| h[k] = [0, 0, 0] }
     valid_moves = valid_root_moves
     checkmate = valid_moves.length > 0 ? false : true
     pieces = []
-
-    @npp[1, 16].each_with_index do |i, idx|
-      npp_chart_data[idx] = i
-      if i > npp_max
-        npp_max = i
-        npp_max_ply = idx
-      end
-    end
 
     SQ.each do |sq|
       if @colors[sq] != EMPTY
@@ -144,32 +131,30 @@ class Chstr
       end
     end
 
-    @pv.each_with_index do |m, depth|
-      pv_total += m.length
-      if m.empty?
-        pv_length = depth
-        break
-      end
-    end
+    pv_white = []
+    pv_black = []
 
-    pv_length.times do |i|
-      @pv[i].each do |j|
-        if i < pv_length * 0.34
-          rgb[j][0] += (pv_length / pv_total)  * (i + 1)
-        elsif i < pv_length * 0.67
-          rgb[j][1] += (pv_length / pv_total)  * (i + 1)
+    8.times do |i|
+      mx = @pv[i].flatten(2).max.to_f
+      SQ.select { |sq| @pv[i][sq].count(0) < 12 }.each do |sq|
+        most = @pv[i][sq].max
+        if most < mx / 2
+          next
+        end
+        idx = @pv[i][sq].index(most)
+        if idx > 5
+          pv_black << { square: SQ_ID[sq], piece: UTF8[BLACK][idx - 6], val: ((most.to_f / mx)**4).round(2), ply: i }
         else
-          rgb[j][2] += (pv_length / pv_total)  * (i + 1)
+          pv_white << { square: SQ_ID[sq], piece: UTF8[WHITE][idx], val: ((most.to_f / mx)**4).round(2), ply: i }
         end
       end
     end
-
-    rgb.each do |k, v|
-      pv_chart_data[k] = "##{v[0].to_s(16)}#{v[1].to_s(16)}#{v[2].to_(16)}"
-    end
+    pv_data = {white: pv_white.sort_by { |n| -n[:ply] }, black: pv_black.sort_by { |n| -n[:ply] } }
 
     if checkmate
       status = 'You lost'
+      move, move_type = "", ""
+      evaluation = 0
     else
       if @best_move
         status = 'OK'
@@ -178,37 +163,25 @@ class Chstr
         evaluation = evaluate
       else
         status = 'You win'
-        move = "none"
-        move_type = ""
-        evaluation = 99999
+        move, move_type = "", ""
+        evaluation = 0
       end
     end
-
     {
       fen: to_fen,
       status: status,
       pieces: pieces,
       from: SQ_ID[@best_move[0]],
       to: SQ_ID[@best_move[1]],
-      pv: pv_chart_data,
-      npp: npp_chart_data,
+      pv: pv_data,
+      npp: @npp,
       nodes: @nodes,
-      report: {
-        'move' => move,
-        'move type' => move_type,
-        'move score' => @best_score,
-        'move changes' => @pv[0].count,
-        'principal variation length' => pv_length,
-        'evaluation after move' => evaluation,
-        'evaluations' => @nodes,
-        'evaluations per second' => (@nodes.to_f / @clock).round(2),
-        'time elapsed' => @clock,
-        'time allotted' => @duration,
-        'max depth' => @max_depth,
-        'median depth' => npp_max_ply,
-        'horizon depth' => @hrzn,
-        'nodes at median' => npp_max
-      }
+      duration: @duration,
+      evaluation: evaluation,
+      eps: (@nodes.to_f / @clock).round(2),
+      clock: @clock,
+      move: "#{move_type} #{move}",
+      score: "#{@best_score}"
     }
   end
 

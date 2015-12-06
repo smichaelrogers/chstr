@@ -5,7 +5,7 @@ class Chstr
   # while deepening to ideally search less unnecessary nodes.  Generates tables for the
   # different heuristics involved in move ordering and move generation.  Stores report data for
   # relay to the browser.
-  def init_search(duration = 4)
+  def init_search(duration)
     @duration = duration
     @clock = 0.0
     init_tables
@@ -29,14 +29,14 @@ class Chstr
         end
 
         if i == 0 && !initial
-          @pv[@ply] << SQ_ID[to]
+          @pv[0][to][piece] += 1
           # search full depth for the principal variation (current best path from the root)
           score = -search(-beta, -alpha, @hrzn, true)
         else
           # null window search
           score = -search(-alpha - 1, -alpha, @hrzn, false)
           if score > @best_score
-            @pv[@ply] << SQ_ID[to]
+            @pv[0][to][piece] += 1
             # found a new principal variation, search it fully
             score = -search(-beta, -alpha, @hrzn, true)
           end
@@ -121,7 +121,7 @@ class Chstr
       i += 1
 
       if pv_node && i == 1
-        @pv[@ply] << SQ_ID[to]
+        @pv[@ply][to][piece + (@wtm * 6)] += 1
         # on principal variation, search full window
         score = -search(-beta, -alpha, depth - 1, true)
       else
@@ -129,7 +129,7 @@ class Chstr
         score = -search(-(alpha + 1), -alpha, depth - (1 + (i / 4)), false)
         if score > alpha && score < beta
           if pv_node
-            @pv[@ply] << SQ_ID[to]
+            @pv[@ply][to][piece + (@wtm * 6)] += 1
             # still on principal variation just not the move we expected
             score = -search(-beta, -alpha, depth - 1, true)
           else
@@ -220,9 +220,8 @@ class Chstr
     # move the computer has chosen, for browser
     @best_move = nil
     @best_score = -INF
-    @duration = 4
     @clock = 0
-    @pv = Array.new(MAXPLY){ [] }
+    @pv = Array.new(MAXPLY){ Array.new(120){ Array.new(12) { 0 }}}
   end
 
 end

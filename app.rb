@@ -1,14 +1,8 @@
-require 'bundler'
-Bundler.require
-require 'json'
+require 'sinatra'
+require 'sinatra/contrib'
 
 class Chstr
   @@book = JSON.parse(File.read('book.json'))
-end
-
-configure :development do
-  use BetterErrors::Middleware
-  BetterErrors.application_root = __dir__
 end
 
 get '/' do

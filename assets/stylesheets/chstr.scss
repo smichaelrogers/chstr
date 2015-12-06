@@ -1,0 +1,330 @@
+@import 'scss/skeleton';
+body {
+  background: rgb(139, 139, 139);
+}
+* {
+  box-sizing: border-box !important;
+  margin: 0;
+  padding: 0;
+  // border: 2px solid rgba(155, 255, 113, 0.54);
+}
+
+.board, .row, .square {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.board {
+  width: 400px;
+  height: 400px;
+  &.ready {
+    .row {
+      .square {
+        &:hover {
+          background: rgb(244, 208, 166) !important;
+        }
+      }
+    }
+  }
+  &.thinking {
+    opacity: 0;
+    .row {
+      .square {
+
+      }
+    }
+  }
+  &.victory {
+
+  }
+  &.defeat {
+
+  }
+  .row {
+    position: relative;
+    width: 400px;
+    height: 50px;
+  }
+  .square {
+    position: relative;
+    float: left;
+    width: 50px;
+    height: 50px;
+    background: rgb(255, 255, 255);
+    color: #222;
+    text-align: center;
+    font-size: 30px;
+    line-height: 50px;
+    &.move-from {
+      background: rgb(228, 74, 162) !important;
+    }
+    &.move-to {
+      background: rgb(228, 190, 74) !important;
+    }
+    &.valid {
+      background: rgb(74, 205, 228) !important;
+    }
+    &.selected {
+      background: rgb(74, 228, 127) !important;
+    }
+  }
+
+  & > .row:nth-child(odd) > .square:nth-child(even),
+  & > .row:nth-child(even) > .square:nth-child(odd) {
+    background: rgb(240, 240, 240);
+  }
+}
+
+.pv {
+  margin: 0 auto;
+  width: 200px;
+  &-row {
+    width: 100%;
+    height: 25px;
+  }
+  &-square {
+    position: relative;
+    float: left;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    font-size: 10px;
+    line-height: 25px;
+    color: #fff;
+  }
+  & > .pv-row:nth-child(odd) > .pv-square:nth-child(even),
+  & > .pv-row:nth-child(even) > .pv-square:nth-child(odd) {
+    background: rgb(240, 240, 240);
+  }
+}
+.npp-labels {
+  position: relative;
+  width: 400px;
+  height: 20px;
+  .ply-label {
+    float: left;
+    width: 50px;
+    height: 20px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+.npp {
+  position: relative;
+  width: 400px;
+  height: 80px;
+  .ply {
+    position: relative;
+    float: left;
+    width: 50px;
+    height: 100px;
+    text-align: center;
+    .bar {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 10px;
+      width: 30px;
+      height: 0;
+      background: rgb(255, 171, 64);
+      span {
+        position: relative;
+        top: -20px;
+        text-align: center;
+        font-size: 8px;
+      }
+    }
+  }
+}
+
+.square::before, .square::after, .row::before, .row::after {
+  color: rgb(200, 200, 200);
+}
+.row::before, .row::after {
+  position: absolute;
+  padding: 1px 3px;
+  font-size: 10px;
+  line-height: 10px;
+}
+.row::after {
+  top: 20px;
+  left: -14px;
+}
+.row::before {
+  top: 20px;
+  right: -14px;
+}
+.square::before, .square::after {
+  position: absolute;
+  left: 0;
+  width: 50px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 10px;
+}
+.row:nth-child(0n+1) > .square::before {
+  top: -13px;
+}
+.row:nth-child(0n+8) > .square::after {
+  bottom: -13px;
+}
+.row:nth-child(0n+1) > .square:nth-child(0n+1)::before, .row:nth-child(0n+8) > .square:nth-child(0n+1)::after{
+  content: 'a';
+}
+.row:nth-child(0n+1) > .square:nth-child(0n+2)::before, .row:nth-child(0n+8) > .square:nth-child(0n+2)::after{
+  content: 'b';
+}
+.row:nth-child(0n+1) > .square:nth-child(0n+3)::before, .row:nth-child(0n+8) > .square:nth-child(0n+3)::after{
+  content: 'c';
+}
+.row:nth-child(0n+1) > .square:nth-child(0n+4)::before, .row:nth-child(0n+8) > .square:nth-child(0n+4)::after{
+  content: 'd';
+}
+.row:nth-child(0n+1) > .square:nth-child(0n+5)::before, .row:nth-child(0n+8) > .square:nth-child(0n+5)::after{
+  content: 'e';
+}
+.row:nth-child(0n+1) > .square:nth-child(0n+6)::before, .row:nth-child(0n+8) > .square:nth-child(0n+6)::after{
+  content: 'f';
+}
+.row:nth-child(0n+1) > .square:nth-child(0n+7)::before, .row:nth-child(0n+8) > .square:nth-child(0n+7)::after{
+  content: 'g';
+}
+.row:nth-child(0n+1) > .square:nth-child(0n+8)::before, .row:nth-child(0n+8) > .square:nth-child(0n+8)::after{
+  content: 'h';
+}
+.row:nth-child(0n+1)::after, .row:nth-child(0n+1)::before{
+  content: '8';
+}
+.row:nth-child(0n+2)::after, .row:nth-child(0n+2)::before{
+  content: '7';
+}
+.row:nth-child(0n+3)::after, .row:nth-child(0n+3)::before{
+  content: '6';
+}
+.row:nth-child(0n+4)::after, .row:nth-child(0n+4)::before{
+  content: '5';
+}
+.row:nth-child(0n+5)::after, .row:nth-child(0n+5)::before{
+  content: '4';
+}
+ .row:nth-child(0n+6)::after, .row:nth-child(0n+6)::before{
+  content: '3';
+}
+.row:nth-child(0n+7)::after, .row:nth-child(0n+7)::before{
+  content: '2';
+}
+.row:nth-child(0n+8)::after, .row:nth-child(0n+8)::before{
+  content: '1';
+}
+
+
+main {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+section.page-section {
+  float: left;
+  margin: 0;
+  padding: 10px 0;
+  width: 100%;
+  text-align: center;
+}
+.wrapper {
+  margin: 0 auto;
+  width: 440px;
+  text-align: center;
+  @media (#{$bp-larger-than-phablet}) {
+    width: 550px;
+  }
+  @media (#{$bp-larger-than-tablet}) {
+    width: 750px;
+  }
+}
+.inner {
+  float: left;
+  width: 100%;
+}
+
+#menu {
+  background: rgb(255, 255, 255);
+}
+#game {
+  background: rgb(255, 255, 255);
+}
+#about {
+  background: rgb(255, 255, 255);
+}
+#footer {
+  background: rgb(255, 255, 255);
+}
+
+.left, .right {
+  float: left;
+  margin-left: 0px;
+  padding: 0;
+  width: 440px;
+  text-align: center;
+}
+#duration {
+  margin-bottom: 0;
+
+}
+.card {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.23);
+  &::after {
+    display: block;
+    clear: both;
+    content: '';
+  }
+  &-heading {
+    display: block;
+    float: left;
+    margin-top: -16px;
+    margin-bottom: 16px;
+    width: 100%;
+    text-align: right;
+    letter-spacing: 0.4px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  &-section {
+    position: relative;
+  }
+  &-item {
+    display: block;
+    float: left;
+    &-third {
+      width: 33%;
+    }
+    &-two-thirds {
+      width: 66%;
+    }
+    &-half {
+      width: 50%;
+    }
+    &-full {
+      width: 100%;
+    }
+  }
+}
+@media (#{$bp-larger-than-phablet}) {
+  .left, .right {
+    margin-left: 45px;
+  }
+}
+@media (#{$bp-larger-than-tablet}) {
+  .left {
+    margin-left: 0px;
+  }
+  .right {
+    margin-left: 20px;
+    width: 280px;
+  }
+}

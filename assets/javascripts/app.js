@@ -1,104 +1,138 @@
-var App = function($board, $report, $pv, $npp) {
-  this.$board = $board;
-  this.$report = $report;
-  this.$pv = $pv;
-  this.$npp = $npp;
+/*
+ *
+ */
 
+var View = function(){
   this.bindEvents();
+  this.pvWhiteColors = ["#9e0142", "#c2294a", "#df4d4b", "#f36c43", "#fa9856", "#fdbe6e", "#fee08b", "#fef4ad"];
+  this.pvBlackColors = ["#5e4fa2", "#4075b4", "#439bb5", "#66c2a5", "#94d4a4", "#bee5a0", "#e6f598", "#f6fbb2"];
+}
 
+View.prototype.bindEvents = function() {
   var view = this;
+  $('.ready .square').on('click', function(event) {
+    var $sq = $(event.currentTarget);
+    if($sq.hasClass('.selected')){
+      $sq.removeClass('selected');
+      $('.square').removeClass('valid');
+    } else if ($sq.hasClass('valid')){
+      view.movePiece($sq);
+    } else if ($sq.text().length > 0) {
+      view.handlePieceClick($sq);
+    } else {
+      $('.square').removeClass('selected').removeClass('valid')
+    }
+  });
+  $('.new-game').on('click', function(event) {
+    $('.board').removeClass('ready').addClass('thinking');
+    $.ajax({
+      type: 'get',
+      url: '/new',
+      data: { 'duration': $('#duration').val() },
+      success: function(resp) {
+        view.updateBoard(JSON.parse(resp));
+      }
+    });
+  });
+}
+
+View.prototype.movePiece = function($piece) {
+  var boardData = {
+    'fen': $('.board').data('fen'),
+    'from': $('.selected').data('square'),
+    'to':  $piece.data('square'),
+    'duration': $('#duration').val()
+  };
+  var view = this;
+  $piece.text($('.selected').text());
+  $('.selected').text('');
+  $('.square').removeClass('valid').removeClass('selected');
+  $('.board').removeClass('ready').addClass('thinking');
   $.ajax({
-    type: 'get',
-    url: '/new',
-    dataType: 'json',
-    data: {
-      'duration': $('#strength').val()
-    },
+    type: 'post',
+    url: '/move',
+    data: boardData,
     success: function(resp) {
       console.log(JSON.parse(resp));
       view.updateBoard(JSON.parse(resp));
     }
   });
-};
+}
 
-App.prototype.bindEvents = function() {
-  var view = this;
-
-  this.$board.click('td', function(event) {
-    var $square = $(event.currentTarget);
-    if ($square.hasClass('valid')) {
-      var fromPos = $('.selected').data('id');
-      var toPos = $square.data('id');
-      $('td').empty().removeClass('selected');
-      $square.text(piece);
-      $.ajax({
-        type: 'post',
-        url: '/move',
-        dataType: 'json',
-        data: {
-          'fen': $('#fen').val(),
-          'from': fromPos,
-          'to': toPos,
-          'duration': $('#strength').val()
-        },
-        success: function(resp) {
-          view.updateBoard(JSON.parse(resp));
-        }
-      });
-    } else {
-      var moves = $square.data('moves');
-      $('td').removeClass('selected');
-      $('td').removeClass('valid');
-      if (moves && moves.length) {
-        $square.addClass('selected');
-        for (var i = 0; i < moves.length; i++) {
-          $('td[data-id="' + moves[i] + '"]').addClass('valid');
-        }
-      }
+View.prototype.handlePieceClick = function($piece) {
+  var moves = $piece.data('moves');
+  $('.square').removeClass('selected').removeClass('valid');
+  if(moves && moves.length) {
+    $piece.addClass('selected');
+    for(var i = 0; i < moves.length; i++) {
+      $('.square[data-square="'+moves[i]+'"]').addClass('valid');
     }
-  });
-};
+  }
+}
 
-App.prototype.updateBoard = function(resp) {
-  $('#fen').val(resp.fen);
-  $('#report').empty();
-  $('td.board-sq').empty();
-  $('td.pv-sq').empty();
-  $('td.npp-sq').empty();
+View.prototype.updateBoard = function(resp) {
+  $('.board').data('fen', resp.fen);
+  $('#evaluation').text(resp.evaluation);
+  $('#nodes').text(resp.nodes);
+  $('#eps').text(resp.eps);
+  $('#clock').text(resp.clock);
+  $('#move').text(resp.move);
+  $('#move-score').text(resp.score);
+  $('.square').empty().removeData('moves');
   var pieces = resp.pieces;
-  for (var key in resp.report) {
-    $('#report').append(
-      '<div class="report-item"><span class="report-key">' + key +
-      '</span><span class="report-value">' + resp.report[key] +
-      '</span></div>'
-    );
+  var pvWhite = resp.pv.white;
+  var pvBlack = resp.pv.black;
+  if(resp.status === 'You lost'){
+    $('.board').removeClass('thinking').addClass('defeat');
+    alert('you lost');
+    return;
+  } else if (resp.status === 'You win') {
+    $('.board').removeClass('thinking').addClass('victory');
+    alert('you win');
+    return;
+  } else {
+    $('.board').removeClass('thinking').addClass('ready');
   }
-  for (var key in resp.pv) {
-    $('td.pv-sq[data-pv-id="' + key + '"]').css('background-color', resp.pv[key]);
+  $('.pv-square').text('');
+  for(var i = 0; i < pvWhite.length; i++) {
+    var $sq = $('.pv-square[data-pv="' + pvWhite[i].square + '"]');
+    $sq.text(pvWhite[i].piece);
+    var clr = this.pvWhiteColors[pvWhite[i].ply];
+    $sq.css({
+      'color': clr,
+      'opacity': pvWhite[i].val
+    });
   }
-  for (var i = 0; i < pieces.length; i++) {
-    var $sq = $('td[data-id="' + pieces[i].square + '"]');
-    $sq.text(pieces[i].piece);
-    $sq.data('moves', pieces[i].moves);
-  }
-  for (var i = 0; i < 16; i++) {
-    $('td.npp-sq[data-ply="' + i + '"]').html('<span class="bar" style="height: ' + Math.round((resp.npp[i] / resp.nodes) * 100) + '%;">' + resp.npp[i] + '</span>');
+  for(var i = 0; i < pvBlack.length; i++) {
+    var $sq = $('.pv-square[data-pv="' + pvBlack[i].square + '"]');
+    $sq.text(pvBlack[i].piece);
+    var clr = this.pvBlackColors[pvBlack[i].ply];
+    $sq.css({
+      'color': clr,
+      'opacity': pvBlack[i].val
+    });
   }
 
-  $('td.board-sq[data-id="' + resp.from + '"]').toggleClass('flash-movement-from');
-  $('td.board-sq[data-id="' + resp.to + '"]').toggleClass('flash-movement-to');
+  for(var i = 0; i < pieces.length; i++) {
+    $('.square[data-square="'+pieces[i].square+'"]')
+      .text(pieces[i].piece)
+      .data('moves', pieces[i].moves);
+  }
+  for(var i = 1; i < 8; i++) {
+    if(resp.npp[i] > 0){
+      $('.bar[data-ply="'+i+'"]')
+        .css('height', Math.round(resp.npp[i] / resp.nodes * 100)+'%')
+        .find('span').text(resp.npp[i]);
+    } else {
+      $('.bar[data-ply="'+i+'"]').css('height', 0)
+        .find('span').text('');
+    }
+  }
+  $('.square[data-square="'+resp.from+'"]').toggleClass('move-from');
+  $('.square[data-square="'+resp.to+'"]').toggleClass('move-to');
+  window.setTimeout(this.toggleMovement.bind(this), 1000);
+}
 
-  adjustSizes();
-  window.setInterval(toggleMovement, 1000);
-};
-
-toggleMovement = function() {
-  $('td.board-sq').removeClass('flash-movement-from').removeClass('flash-movement-to');
-};
-
-adjustSizes = function() {
-  var w = $('#board').width() / 8;
-  $('td.board-sq').width(w).height(w).css('font-size', w * 0.6);
-  var pvw = $("#pv").width() / 8;
-  $('td.pv-sq').width(pvw).height(pvw).css('font-size', pvw * 0.6);
-};
+View.prototype.toggleMovement = function() {
+  $('.square').removeClass('move-from').removeClass('move-to');
+}
