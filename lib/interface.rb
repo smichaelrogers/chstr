@@ -33,6 +33,7 @@ module Chstr
           @colors[i], @squares[i] = -1, -1
         end
       end
+      
       @fen.split.first.split('/').map do |row|
           row.chars.map { |sq| sq.between?('1', '8') ? sq.to_i.times.map { '6' } : sq }
       end.flatten.each_with_index do |sq, i|
