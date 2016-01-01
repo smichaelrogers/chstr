@@ -13,7 +13,7 @@ module Chstr
           add_move(from, to - 1, P, true) if @colors[to - 1] == @mn || to - 1 == ep
           if @colors[to] == EMPTY && !only_captures
             add_move(from, to, P)
-            if (from > 80 || from < 40) &&@colors[to + DIR[@mx]] == EMPTY
+            if (from > 80 || from < 40) && @colors[to + DIR[@mx]] == EMPTY
               add_move(from, to + DIR[@mx], P)
             end
           end
