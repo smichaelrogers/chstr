@@ -5,12 +5,12 @@ $yellow: rgb(255, 206, 85);
 $green: rgb(90, 193, 166);
 $pink: rgb(231, 136, 184);
 $light: rgb(210, 210, 210);
-$lighter: rgb(230, 230, 230);
-$lightest: rgb(250, 250, 250);
+$lighter: rgb(225, 225, 225);
+$lightest: rgb(240, 240, 240);
 $text-color: rgb(80, 80, 80);
 $font-body: 'Fira Sans', 'Helvetica Neue', 'Open Sans', Helvetica, Arial, sans-serif;
 $font-data: 'Fira Mono', 'Roboto Mono', 'Source Code Pro', monospace;
-$border-radius: 5px;
+$border-radius: 6px;
 
 a {
   color: $blue;
@@ -71,6 +71,10 @@ textarea { font-size: 1.4rem; }
   &.btn-third {
     width: 33.33%;
     float: left; }
+  &.btn-disabled {
+    color: $light;
+    cursor: not-allowed;
+  }
   &.btn-select {
     margin-top: 5px;
     padding: 0;
@@ -118,7 +122,6 @@ textarea { font-size: 1.4rem; }
 
 .fen-row {
   line-height: 0.8rem;
-  border-bottom: 1px solid $lighter !important;
   padding: 0;
   margin: 0;
   & > td {

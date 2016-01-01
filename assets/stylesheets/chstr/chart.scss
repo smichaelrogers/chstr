@@ -40,8 +40,11 @@
 
 /*-- Text on Chart --*/
 .c3-text.c3-empty {
-  fill: #808080;
-  font-size: 2em; }
+  fill: $light;
+  letter-spacing: 5px;
+  font-weight: 300;
+  text-transform: uppercase;
+  font-size: 1.2rem; }
 
 /*-- Line --*/
 .c3-line {
@@ -85,7 +88,11 @@
 /*-- Select - Drag --*/
 /*-- Legend --*/
 .c3-legend-item {
-  font-size: 12px; }
+  font: 0.8rem $font-body;
+  line-height: 2rem;
+  fill: rgb(185, 185, 185);
+  font-size: 0.8rem;
+}
 
 .c3-legend-item-hidden {
   opacity: 0.15; }
@@ -93,7 +100,7 @@
 .c3-legend-background {
   opacity: 0.75;
   fill: white;
-  stroke: lightgray;
+  stroke: $lightest;
   stroke-width: 1; }
 
 /*-- Title --*/

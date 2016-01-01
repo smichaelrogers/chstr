@@ -1,3 +1,4 @@
+
 /*************************************
  * lots of unnecessary clearing
  *************************************/
@@ -9,6 +10,7 @@
 .card-middle::after,
 .card-condensed::after,
 .card-half::after,
+#nav::after,
 #pv-list::after,
 #pv-board::after,
 #board::after {
@@ -16,18 +18,47 @@
   clear: both;
   content: ""; }
 
+div#nav.section {
+  position: relative;
+  height: 60px;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 20px;
+  background: #fff;
+  box-shadow: 0 1px 1px 0px rgba(0,0,0,0.05);
+
+  @media (#{$bp-larger-than-tablet}) {
+    margin-bottom: 30px;
+  }
+
+  @media (#{$bp-larger-than-desktop}) {
+    margin-bottom: 40px;
+  }
+
+  & > .wrapper {
+    color: #fff;
+    height: 60px;
+    line-height: 60px;
+    & > .nav-item {
+      font-size: 1.6rem;
+      display: block;
+      float: left;
+    }
+  }
+}
+
 /*************************************
  * main wrapping/media queries
  *************************************/
- .section {
-   position: relative;
-   width: 100%;
-   margin: 0; }
+.section {
+ position: relative;
+ width: 100%;
+ margin: 0; }
 
 .wrapper {
   position: relative;
   margin: 0 auto;
-  padding: 1rem 0;
+  padding: 0;
   max-width: 960px;
   width: 440px;
   @media (#{$bp-larger-than-phablet}) { width: 550px; }
@@ -67,9 +98,11 @@
 .card {
   position: relative;
   margin-bottom: 20px;
-  border: 1px solid $light;
   border-radius: $border-radius;
-  padding-bottom: 30px; }
+  background: #fff;
+  padding-bottom: 30px;
+  box-shadow: 1px 1px 1px 0 rgba(0,0,0,0.1), -4px 6px 12px -2px rgba(0,0,0,0.02);
+}
 
 .card-top, .card-middle, .card-bottom, .card-heading, .card-condensed, .card-subheading {
   float: left;
@@ -104,29 +137,31 @@
     float: left; }
   &.right {
     width: 45%;
-    float: right;
-    border-left: 1px solid $lighter; }}
+    float: right; }}
 
 .card-subheading {
-  padding: 20px 10px 0 20px;
+  padding: 20px 20px 0 20px;
   margin: 0;
   font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   line-height: 1.5rem;
   text-align: right;
-  border-bottom: 1px solid $lighter;
-  color: lighten($text-color, 20%);
-  small { color: lighten($text-color, 40%); }}
+  color: darken($light, 20%);
+  small { color: $light; }}
 
 .card-vertical-scroll {
   overflow-y: scroll;
   height: 160px; }
 
 .card-condensed {
-  border-bottom: 1px solid $lighter;
   padding: 0;
   margin: 0; }
+
+.card-top {
+  padding: 0;
+  margin: 0;
+}
 
 
 /*************************************
@@ -138,3 +173,11 @@
 .text-center { text-align: center; }
 .left { float: left; }
 .right { float: right; }
+//
+//
+// body {
+//   background: #ddd;
+//   // background: linear-gradient(to left, #304352 , #d7d2cc);
+//   // background: linear-gradient(to left, #ECE9E6 , #FFFFFF);
+//   // background: linear-gradient(to left, #8e9eab , #eef2f3);
+// }

@@ -24,7 +24,7 @@
 
 .row:nth-child(odd) > .square:nth-child(even),
 .row:nth-child(even) > .square:nth-child(odd) {
-  background: rgba(220, 220, 220, 0.5);
+  background: rgb(215, 215, 215);
   &.movement {}
   &.valid {}
   &.selected {} }
@@ -33,13 +33,14 @@
  * square
  *************************************/
 .square {
+  background: rgb(245, 245, 245);
   position: relative;
   float: left;
   width: 47.5px;
   height: 47.5px;
   text-align: center;
-  font-size: 30px;
-  line-height: 47.5px; }
+  font-size: 24px;
+  line-height: 52px; }
 
 
 // light squares
@@ -123,7 +124,7 @@
   *************************************/
 #npp {
   position: relative;
-  height: 185px;
+  height: 200px;
   margin-top: 10px;
   &::after, &::before {
     font-weight: 300;
@@ -152,7 +153,7 @@ table.data-table {
   width: 100%;
   margin: 0;
   padding: 0;
-  line-height: 1.4rem;
+  line-height: 1.2rem;
   font-size: 1rem;
 
   td, th, tr {
@@ -176,7 +177,7 @@ table.data-table {
     margin: 0;
     padding: 0; }}
 
-  thead { tr { background: $lighter; }}
+  // thead { tr { background: $lightest; }}
 
 ul.data-list, ul.data-list li {
   list-style: none;
@@ -187,4 +188,4 @@ ul.data-list, ul.data-list li {
   margin: 0;
   line-height: 1.2rem;
   font-size: 1rem;
-  li { border-bottom: 1px solid $lighter }}
+}

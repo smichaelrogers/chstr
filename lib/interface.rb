@@ -73,6 +73,14 @@ module Chstr
     def render
       total_pv, total_nw, total_qs = @npp_pv.inject(:+), @npp_nw.inject(:+), @npp_qs.inject(:+)
       total_nodes = total_pv + total_nw + total_qs
+      moves = Array.new(64) { [] }
+      1.upto(@root_n - 1) do |i|
+        idx = @mv_idx[i]
+        next unless @mv_legal[idx]
+        m = @mv[idx]
+        moves[SQ64[m.from]] << { to: SQ64[m.to], san: @mv_san[idx], fen: @mv_fen[idx], type: @mv_type[idx] }
+      end
+      board =
       {
         fen: @fen,
         nps: (total_nodes.to_f / @clock).round(2),
@@ -83,13 +91,7 @@ module Chstr
         qs_count: total_qs,
         node_count: total_nodes,
         board: SQ.map { |sq| @squares[sq] == EMPTY ? "" : UTF8[@colors[sq]][@squares[sq]] },
-        moves: (1...@root_n).to_a.select { |i| @mv_legal[@mv_idx[i]] }.map { |i| @mv_idx[i] }
-        .map { |idx| { piece: UTF8[@colors[@mv[idx].from]][@squares[@mv[idx].from]],
-                       from: SQ64[@mv[idx].from],
-                       to: SQ64[@mv[idx].to],
-                       type: @mv_type[idx],
-                       san: @mv_san[idx],
-                       fen: @mv_fen[idx] } }.sort_by { |m| m[:from] },
+        moves: moves,
         pv_board: @pv_chart.map { |sq| (sq[:piece] != '' && sq[:depth] > 0) ?
           { piece: sq[:piece], class: "p#{sq[:ply]} d#{sq[:depth]}"} : { piece: "", class: "" } },
         pv_list: @pv_list.reverse.select { |m| m[:depth] > 0 }.map { |m|
