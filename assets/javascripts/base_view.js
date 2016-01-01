@@ -12,6 +12,7 @@ App.BaseView = Backbone.View.extend({
     'click .select-duration': 'selectDuration'
   },
 
+
   initialize: function() {
     this.gameHistory = [App.INIT_FEN];
     this.lastPosition = App.INIT_FEN;
@@ -21,9 +22,11 @@ App.BaseView = Backbone.View.extend({
     this.render();
   },
 
+
   render: function() {
     var content = this.template({ranks: App.RANKS,files: App.FILES});
     this.$el.html(content);
+
     this.nppChart = c3.generate({
       bindto: '#npp',
       data: {
@@ -47,8 +50,9 @@ App.BaseView = Backbone.View.extend({
       transition: { duration: 1000 }
     });
 
-      return this;
-    },
+    return this;
+  },
+
 
   renderViews: function(data) {
     var view = this;
@@ -88,16 +92,21 @@ App.BaseView = Backbone.View.extend({
     }
   },
 
+
   handleSquareClick: function(event) {
     event.preventDefault();
+
     var $sq = $(event.currentTarget);
     var i = parseInt($sq.data('square'));
+
     if($sq.hasClass('movable')) {
       this.$('div.square').removeClass('selected valid');
       $sq.addClass('selected');
+
       for(var j = 0; j < this.moveList[i].length; j++) {
         this.$('div.square[data-square="' + this.moveList[i][j].to + '"]').addClass('valid');
       }
+
     } else if($sq.hasClass('valid')) {
       var $selected = this.$('div.selected');
       var j = parseInt($selected.data('square'));
@@ -106,6 +115,7 @@ App.BaseView = Backbone.View.extend({
         if(this.moveList[j][k].to === i) {
           var fen = this.moveList[j][k].fen;
           var view = this;
+
           $.ajax({
             url: '/api',
             type: 'post',
@@ -122,9 +132,11 @@ App.BaseView = Backbone.View.extend({
     }
   },
 
+
   newGame: function(event) {
     event.preventDefault();
     var view = this;
+
     $.ajax({
       url: '/api',
       type: 'get',
@@ -135,6 +147,7 @@ App.BaseView = Backbone.View.extend({
       }
     });
   },
+
 
   selectDuration: function(event) {
     event.preventDefault();
