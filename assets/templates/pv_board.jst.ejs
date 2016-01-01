@@ -1,0 +1,7 @@
+<% for(var i = 0; i < 8; i++) { %>
+  <div class="pv-row">
+    <% for(var j = 0; j < 8; j++) { %>
+      <div class="pv-square <%= squares[(i*8)+j].class %>"><%= squares[(i*8)+j].piece %></div>
+    <% }; %>
+  </div>
+<% }; %>

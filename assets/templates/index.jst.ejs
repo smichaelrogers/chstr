@@ -1,0 +1,92 @@
+<div class="section">
+  <div class="wrapper">
+    <div class="content">
+
+      <div class="card" id="board-outer">
+        <div class="card-middle">
+          <div id="board" class="ready">
+            <% for(var i = 0; i < 8; i++) { %>
+              <div class="row" data-rank="<%= ranks[i] %>">
+                <% for(var j = 0; j < 8; j++) { %>
+                  <div class="square" data-square="<%= [(i*8)+j] %>" data-file="<%= files[j] %>"></div>
+                <% }; %>
+              </div>
+            <% }; %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-heading"></div>
+        <div class="card-subheading">Node Distribution</div>
+        <div class="card-condensed" id="npp"></div>
+        <div class="card-condensed">
+          <table class="data-table">
+            <thead><tr><th class="node-label">PV</th><th class="node-label">Scout</th><th class="node-label">Leaf</th></tr></thead>
+            <tbody><tr><td id="pv-count">0</td><td id="nw-count">0</td><td id="qs-count">0</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div class="content">
+
+      <div class="card">
+        <div class="card-heading"></div>
+
+        <div class="card-condensed">
+          <button type="button" id="new-game" class="btn btn-half">New Game</button>
+          <button type="button" id="undo-move" class="btn btn-disabled btn-half">Undo</button>
+        </div>
+
+        <div class="card-subheading">Duration <small>(seconds)</small></div>
+        <div class="card-condensed">
+          <button type="button" class="btn select-duration btn-third btn-select btn-selected"><span>4</span><small>Weak</small></button>
+          <button type="button" class="btn select-duration btn-third btn-select"><span>16</span><small>Normal</small></button>
+          <button type="button" class="btn select-duration btn-third btn-select"><span>32</span><small>Full</small></button>
+        </div>
+
+        <div class="card-subheading">Search Statistics</div>
+        <div class="card-condensed">
+          <table class="data-table">
+            <thead><tr><th>Clock</th><th>Nodes</th><th>NPS</th></tr></thead>
+            <tbody><tr><td id="clock">0.0/0</td><td id="node-count">0</td><td id="nps">0.0</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="card-subheading">History</div>
+        <div class="card-condensed card-vertical-scroll">
+          <table class="data-table">
+            <thead><tr><th></th><th>SAN</th><th>Type</th><th>Move</th><th>Score</th></tr></thead>
+            <tbody id="history"></tbody>
+          </table>
+        </div>
+
+        <div class="card-subheading">Evaluation</div>
+        <div class="card-condensed">
+          <table class="data-table">
+            <thead><tr class="data-heading"><th>♙ White</th><th colspan="2"> </th><th>♟ Black</th></tr></thead>
+            <tbody id="evaluation"></tbody>
+          </table>
+        </div>
+
+        <div class="card-subheading">Variations</div>
+        <div class="card-condensed">
+          <div class="card-half left">
+            <div id="pv-board">
+              <% for(var i = 0; i < 8; i++) { %>
+                <div class="pv-row">
+                  <% for(var j = 0; j < 8; j++) { %>
+                    <div class="pv-square"></div>
+                  <% }; %>
+                </div>
+              <% }; %>
+            </div>
+          </div>
+          <div class="card-half right"><ul id="pv-list" class="data-list"></ul></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

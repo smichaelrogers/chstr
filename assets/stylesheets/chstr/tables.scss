@@ -1,0 +1,190 @@
+
+/*************************************
+ * board
+ *************************************/
+#board {
+  position: relative;
+  width: 380px;
+  height: 380px;
+  margin: 10px; }
+
+#board.ready .square {}
+#board.thinking .square { opacity: 0.3; }
+#board.stopped .square {}
+
+#board-outer { padding-bottom: 0 !important; }
+
+/*************************************
+ * row
+ *************************************/
+.row {
+  position: relative;
+  width: 380px;
+  height: 47.5px; }
+
+.row:nth-child(odd) > .square:nth-child(even),
+.row:nth-child(even) > .square:nth-child(odd) {
+  background: rgba(220, 220, 220, 0.5);
+  &.movement {}
+  &.valid {}
+  &.selected {} }
+
+/*************************************
+ * square
+ *************************************/
+.square {
+  position: relative;
+  float: left;
+  width: 47.5px;
+  height: 47.5px;
+  text-align: center;
+  font-size: 30px;
+  line-height: 47.5px; }
+
+
+// light squares
+.square.movement {}
+.square.valid {}
+.square.selected {}
+
+/*************************************
+ * rank/file marker stuff
+ *************************************/
+.square[data-file]::before,
+.square[data-file]::after,
+.row[data-rank]::before,
+.row[data-rank]::after {
+  position: absolute;
+  font-family: $font-data;
+  color: $light;
+  font-size: 10px;
+  line-height: 10px;
+}
+
+.row:nth-child(0n+1) .square[data-file]::before{
+  content: attr(data-file);
+  left: 0;
+  width: 47.5px;
+  text-align: center;
+  top: -15px;
+}
+.row:nth-child(0n+8) .square[data-file]::after{
+  content: attr(data-file);
+  bottom: -15px;
+  left: 0;
+  width: 47.5px;
+  text-align: center;
+}
+
+.row[data-rank]::after{
+  content: attr(data-rank);
+  line-height: 47.5px;
+  left: -15px;
+}
+.row[data-rank]::before{
+  content: attr(data-rank);
+  right: -15px;
+  line-height: 47.5px;
+}
+
+/*************************************
+ * pv board/move list formatting
+ *************************************/
+ #pv-list, #pv-board {
+   margin: 0 auto;
+   padding: 0; }
+
+ #pv-list { width: 100%; }
+
+ #pv-board { width: 140px; }
+
+ .pv-row {
+   margin: 0;
+   padding: 0;
+   width: 100%;
+   height: 17.5px; }
+
+ .pv-square {
+   margin: 0;
+   position: relative;
+   float: left;
+   width: 17.5px;
+   height: 17.5px;
+   text-align: center;
+   font-size: 15px;
+   line-height: 17.5px; }
+// alternating colors
+ .pv-row:nth-child(odd) > .pv-square:nth-child(even),
+ .pv-row:nth-child(even) > .pv-square:nth-child(odd) { background: $lightest; }
+
+ /*************************************
+  * node dist chart formatting
+  *   & axis labels
+  *************************************/
+#npp {
+  position: relative;
+  height: 185px;
+  margin-top: 10px;
+  &::after, &::before {
+    font-weight: 300;
+    position: absolute;
+    text-align: right;
+    font-size: 0.8rem;
+    color: $light;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: block; }
+  &::after {
+    content: 'ply';
+    bottom: 45px;
+    right: 60px; }
+  &::before {
+    content: 'nodes';
+    top: 30px;
+    left: 40px;
+    transform: rotate(90deg); }}
+
+
+/*************************************
+ * tabular data formatting
+ *************************************/
+table.data-table {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4rem;
+  font-size: 1rem;
+
+  td, th, tr {
+    text-align: center;
+    border: 0;
+    margin: 0;
+    padding: 4px 8px;
+    font-weight: 400; }
+
+  th {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 300; }
+
+  td {
+    font-weight: 400;
+    color: lighten($text-color, 15%);
+    font-family: $font-data; }
+
+  tbody, thead {
+    margin: 0;
+    padding: 0; }}
+
+  thead { tr { background: $lighter; }}
+
+ul.data-list, ul.data-list li {
+  list-style: none;
+  display: block;
+  width: 100%;
+  float: left;
+  padding: 4px;
+  margin: 0;
+  line-height: 1.2rem;
+  font-size: 1rem;
+  li { border-bottom: 1px solid $lighter }}

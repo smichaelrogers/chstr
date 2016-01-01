@@ -1,0 +1,140 @@
+/*************************************
+ * lots of unnecessary clearing
+ *************************************/
+.section::after,
+.wrapper::after,
+.content::after,
+.card::after,
+.card-content::after,
+.card-middle::after,
+.card-condensed::after,
+.card-half::after,
+#pv-list::after,
+#pv-board::after,
+#board::after {
+  display: table;
+  clear: both;
+  content: ""; }
+
+/*************************************
+ * main wrapping/media queries
+ *************************************/
+ .section {
+   position: relative;
+   width: 100%;
+   margin: 0; }
+
+.wrapper {
+  position: relative;
+  margin: 0 auto;
+  padding: 1rem 0;
+  max-width: 960px;
+  width: 440px;
+  @media (#{$bp-larger-than-phablet}) { width: 550px; }
+  @media (#{$bp-larger-than-tablet}) { width: 750px; }
+  @media (#{$bp-larger-than-desktop}) { width: 960px; }}
+
+.content {
+  min-height: 100px;
+  position: relative;
+  float: left;
+  margin-left: 0;
+
+  @media (#{$bp-larger-than-phablet}) {
+    margin-left: 50px;
+    width: 440px; }
+
+  @media (#{$bp-larger-than-tablet}) {
+    &:nth-child(0n+1) { margin-left: 0; }
+    &:nth-child(0n+2) {
+      margin-left: 20px;
+      width: 290px; }}
+
+  @media (#{$bp-larger-than-desktop}) {
+    &:nth-child(0n+1) { margin-left: 60px; }
+    &:nth-child(0n+2) {
+      margin-left: 40px;
+      width: 340px; }}}
+
+@media (#{$bp-larger-than-desktop}) {
+  .card { margin-bottom: 40px !important; }
+  .content { margin-left: 40px; }}
+
+
+/*************************************
+ * sub section formatting
+ *************************************/
+.card {
+  position: relative;
+  margin-bottom: 20px;
+  border: 1px solid $light;
+  border-radius: $border-radius;
+  padding-bottom: 30px; }
+
+.card-top, .card-middle, .card-bottom, .card-heading, .card-condensed, .card-subheading {
+  float: left;
+  width: 100%; }
+
+.card-heading {
+  padding: 10px 20px 0px 20px;
+  line-height: 20px;
+  h5 {
+    font-size: 1.8rem;
+    line-height: 2rem;
+    margin: 0;
+    padding: 0; }}
+
+.card-top { padding: 10px 20px 10px 20px; }
+.card-middle { padding: 20px 20px; }
+.card-bottom { padding: 10px; }
+
+.card-content {
+  width: 100%;
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 0;
+  position: relative; }
+.card-half {
+  min-height: 160px;
+  margin: 0;
+  padding: 10px 0;
+  &.left {
+    width: 55%;
+    float: left; }
+  &.right {
+    width: 45%;
+    float: right;
+    border-left: 1px solid $lighter; }}
+
+.card-subheading {
+  padding: 20px 10px 0 20px;
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.5rem;
+  text-align: right;
+  border-bottom: 1px solid $lighter;
+  color: lighten($text-color, 20%);
+  small { color: lighten($text-color, 40%); }}
+
+.card-vertical-scroll {
+  overflow-y: scroll;
+  height: 160px; }
+
+.card-condensed {
+  border-bottom: 1px solid $lighter;
+  padding: 0;
+  margin: 0; }
+
+
+/*************************************
+ * formatting
+ *************************************/
+
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.left { float: left; }
+.right { float: right; }

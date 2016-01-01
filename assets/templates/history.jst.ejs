@@ -1,0 +1,14 @@
+<% for(var i = 0; i < moves.length; i++) { %>
+  <tr class="history-row">
+    <td><%= moves.length - i %></td>
+    <td><%= moves[i].notation %></td>
+    <td><%= moves[i].type %></td>
+    <td><%= moves[i].move %></td>
+    <td><%= moves[i].score %></td>
+  </tr>
+  <tr class="fen-row">
+    <td colspan="5">
+      <%= moves[i].fen.slice(0, 32) %>...<a class="fen-select" href="#">(load)</a>
+    </td>
+  </tr>
+<% }; %>

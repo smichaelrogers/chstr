@@ -1,27 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Chstr Open Source Chess Engine</title>
-    <meta name="description" content="Chstr Chess Engine App">
-    <meta name="author" content="Scott Michael Rogers">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="images/favicon.png">
-    <link rel="stylesheet" href="assets/application.css" media="screen" charset="utf-8">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <title>chsr</title>
+    <meta content="Chstr Chess Engine" name="description">
+    <meta content="Scott Michael Rogers" name="author">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="images/favicon.png" rel="icon" type="image/png">
+    <link charset="utf-8" href="assets/application.css" media="screen" rel="stylesheet">
   </head>
-
   <body>
     <%= yield %>
     <script src="assets/application.js"></script>
-    <script src="./respond.min.js"></script>
-    <script src="./chroma.min.js"></script>
-    <script>
-      $(function() {
-        new View();
-      });
-    </script>
   </body>
 </html>

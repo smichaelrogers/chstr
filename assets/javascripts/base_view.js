@@ -1,0 +1,132 @@
+App.BaseView = Backbone.View.extend({
+
+  template: JST['index'],
+
+  el: $('body'),
+
+  events: {
+    'click #new-game': 'newGame',
+    'click #undo-move': 'undoMove',
+    'click .revert-position': 'revertPosition',
+    'click .square': 'handleSquareClick',
+    'click .invalid': 'deselectPiece',
+    'click .select-duration': 'selectDuration'
+  },
+
+  initialize: function() {
+    this.gameHistory = [App.INIT_FEN];
+    this.lastPosition = App.INIT_FEN;
+    this.duration = 4;
+    this.moveHistory = [];
+    this.targets = [];
+    this.render();
+  },
+
+  render: function() {
+    var content = this.template({ranks: App.RANKS,files: App.FILES});
+    this.$el.html(content);
+    this.nppChart = c3.generate({
+      bindto: '#npp',
+      data: { columns: [['pv', 0], ['nw', 0], ['qs', 0]],
+              types: { pv: 'area-spline', nw: 'spline', qs: 'spline' },
+              names: { pv: 'PV', nw: 'Scout', qs: 'Leaf' }, order: null },
+      color: { pattern: App.COLORS },
+      size: { width: 420, height: 200 },
+      axis: { y: {tick: {values: [0, 5000, 10000, 20000, 30000, 40000, 50000, 75000, 100000, 150000] }},
+              x: {min: 0, tick: { values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] }}},
+      point: { show: false },
+      legend: { hide: true }});
+    return this;
+  },
+
+  renderViews: function(data) {
+    var view = this;
+    this.lastPosition = this.gameHistory[0];
+    this.gameHistory.unshift(data.fen);
+    this.moveHistory.unshift(data.move);
+    this.nppChart.load({columns: data.npp});
+
+    this.$('#history').html(JST['history']({ moves: view.moveHistory }));
+    this.$('#pv-board').html(JST['pv_board']({ squares: data.pv_board }));
+    this.$('#pv-list').html(JST['pv_list']({ list: data.pv_list }));
+    this.$('#evaluation').html(JST['evaluation']({ ev: data.evaluation }));
+
+    this.$('#pv-count').text(data.pv_count);
+    this.$('#nw-count').text(data.nw_count);
+    this.$('#qs-count').text(data.qs_count);
+
+    this.$('#clock').text(data.clock);
+    this.$('#node-count').text(data.node_count);
+    this.$('#nps').text(data.nps);
+
+    this.$('div.square').removeClass('selected movable valid');
+
+    for(var i = 0; i < 64; i++) {
+      var $sq = this.$('div.square[data-square="' + i + '"]');
+      $sq.empty();
+      $sq.data('moves', []);
+      $sq.text(data.board[i]);
+    }
+
+    this.moveList = data.moves;
+
+    for(var i = 0; i < data.moves.length; i++) {
+      var $sq = this.$('div.square[data-square="' + data.moves[i].from + '"]')
+      $sq.data('moves').push(_.clone(data.moves[i]));
+      $sq.addClass('movable');
+    }
+  },
+
+  handleSquareClick: function(event) {
+    event.preventDefault();
+    var $sq = $(event.currentTarget);
+    if($sq.hasClass('movable')) {
+      this.$(".square").removeClass('valid');
+      if ($sq.data('moves').length && $sq.data('moves').length > 0) {
+        $sq.addClass('selected');
+        for(var i = 0; i < $sq.data('moves').length; i++) {
+          this.$('div.square[data-square="' + $sq.data('moves')[i].to +'"]').addClass('valid');
+        }
+      }
+    } else if ($sq.hasClass('valid')) {
+      var view = this;
+      for(var i = 0; i < $('.selected').data('moves').length; i++) {
+        if($('.selected').data('moves')[i].to === $sq.data('square')) {
+          var fen = $('.selected').data('moves')[i].fen;
+        }
+      }
+      this.$('.square').removeClass('valid selected movable');
+      $.ajax({
+        url: '/api',
+        type: 'post',
+        data: {'fen': fen, 'history': view.gameHistory, 'duration': view.duration},
+        success: function(resp) {
+          console.log(JSON.parse(resp));
+          view.renderViews(JSON.parse(resp));
+        }
+      });
+    } else {
+      this.$('.square').removeClass('valid selected');
+    }
+  },
+
+  newGame: function(event) {
+    event.preventDefault();
+    var view = this;
+    $.ajax({
+      url: '/api',
+      type: 'get',
+      data: {'duration': view.duration },
+      success: function(resp) {
+        console.log(JSON.parse(resp));
+        view.renderViews(JSON.parse(resp));
+      }
+    });
+  },
+
+  selectDuration: function(event) {
+    event.preventDefault();
+    this.$('.select-duration').removeClass('btn-selected');
+    $(event.currentTarget).addClass('btn-selected');
+  }
+});
