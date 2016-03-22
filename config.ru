@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'bundler'
 Bundler.require
-
-Dir.glob("./lib/*.rb") { |dep| require dep }
+require './constants.rb'
+require './search.rb'
 
 map '/assets' do
   environment = Sprockets::Environment.new
